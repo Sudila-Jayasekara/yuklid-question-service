@@ -1,13 +1,16 @@
 package com.yuklid.question_service.controller;
 
+import com.yuklid.question_service.dto.QuestionOptionDTO;
 import com.yuklid.question_service.model.Question;
 import com.yuklid.question_service.service.QuestionService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
+import java.util.UUID;
 
 @RestController
 @RequestMapping("/api/v1/questions")
@@ -28,9 +31,23 @@ public class QuestionController {
     }
 
     @PostMapping("/create")
-    public ResponseEntity<Question> createQuestion(Question question) {
-        Question createdQuestion = questionService.createQuestion(question);
-        return ResponseEntity.status(201).body(createdQuestion);
+    public ResponseEntity<QuestionOptionDTO> createQuestion(@Valid @RequestBody QuestionOptionDTO dto) {
+        QuestionOptionDTO saved = questionService.createQuestion(dto);
+        return ResponseEntity.status(HttpStatus.CREATED).body(saved);
     }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<QuestionOptionDTO> getQuestionById(@PathVariable UUID id) {
+        QuestionOptionDTO question = questionService.getQuestionById(id);
+        return ResponseEntity.ok(question);
+    }
+
+    @GetMapping("/all")
+    public ResponseEntity<List<QuestionOptionDTO>> getAllQuestions() {
+        List<QuestionOptionDTO> questions = questionService.getAllQuestions();
+        return ResponseEntity.ok(questions);
+    }
+
+
 
 }
