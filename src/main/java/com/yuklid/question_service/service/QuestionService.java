@@ -1,6 +1,7 @@
 package com.yuklid.question_service.service;
 
-import com.yuklid.question_service.dto.QuestionOptionDTO;
+import com.yuklid.question_service.dto.QuestionRequestDTO;
+import com.yuklid.question_service.dto.QuestionResponseDTO;
 import com.yuklid.question_service.exception.QuestionNotFoundException;
 import com.yuklid.question_service.model.Option;
 import com.yuklid.question_service.model.Question;
@@ -19,55 +20,29 @@ public class QuestionService {
     private final QuestionRepository questionRepository;
     private final OptionRepository optionRepository;
 
-    public Question getRandomQuestion() {
-        List<Question> questions = questionRepository.findAll();
-        if (questions.isEmpty()) {
-            throw new QuestionNotFoundException("No questions available");
-        }
-        // Randomly select a question from the list
-        int randomIndex = (int) (Math.random() * questions.size());
-        return questions.get(randomIndex);
-    }
 
 
     @Transactional
-    public QuestionOptionDTO createQuestion(QuestionOptionDTO dto) {
-        boolean valid = dto.getOptions().stream()
-                .anyMatch(opt -> opt.getLabel().equals(dto.getCorrectOption()));
-        if (!valid) {
-            throw new IllegalArgumentException("Correct option must match one of the labels");
-        }
-
+    public QuestionResponseDTO createQuestion(QuestionRequestDTO dto) {
         Question question = mapToQuestionEntity(dto);
         Question saved = questionRepository.save(question);
-
         return mapToQuestionOptionDTO(saved);
     }
 
-    public QuestionOptionDTO getQuestionById(UUID id) {
+    public QuestionResponseDTO getQuestionById(UUID id) {
         Question question = questionRepository.findById(id)
                 .orElseThrow(() -> new QuestionNotFoundException("Question not found"));
         return mapToQuestionOptionDTO(question);
     }
 
-    public List<QuestionOptionDTO> getAllQuestions() {
-        List<Question> questions = questionRepository.findAll();
-        return questions.stream()
-                .map(this::mapToQuestionOptionDTO)
-                .toList();
-    }
-
-
-    private QuestionOptionDTO mapToQuestionOptionDTO(Question question) {
-        return QuestionOptionDTO.builder()
+    private QuestionResponseDTO mapToQuestionOptionDTO(Question question) {
+        return QuestionResponseDTO.builder()
                 .id(question.getId())
                 .questionText(question.getQuestionText())
-                .correctOption(question.getCorrectOption())
                 .options(
                         question.getOptions().stream()
-                                .map(opt -> QuestionOptionDTO.OptionDTO.builder()
+                                .map(opt -> QuestionResponseDTO.OptionDTO.builder()
                                         .id(opt.getId())
-                                        .label(opt.getLabel())
                                         .text(opt.getText())
                                         .build())
                                 .toList()
@@ -75,16 +50,15 @@ public class QuestionService {
                 .build();
     }
 
-    private Question mapToQuestionEntity(QuestionOptionDTO dto) {
+    private Question mapToQuestionEntity(QuestionRequestDTO dto) {
         Question question = Question.builder()
                 .questionText(dto.getQuestionText())
-                .correctOption(dto.getCorrectOption())
                 .build();
 
         List<Option> options = dto.getOptions().stream()
                 .map(opt -> Option.builder()
-                        .label(opt.getLabel())
                         .text(opt.getText())
+                        .isCorrect(opt.getIsCorrect())
                         .question(question)
                         .build())
                 .toList();
