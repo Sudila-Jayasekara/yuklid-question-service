@@ -19,7 +19,6 @@ public class Question {
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
     private String questionText;
-    private String correctOption;
 
     @OneToMany(mappedBy = "question", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Option> options;

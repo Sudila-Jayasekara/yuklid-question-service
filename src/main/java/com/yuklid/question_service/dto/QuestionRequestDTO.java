@@ -8,37 +8,25 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.util.List;
-import java.util.UUID;
 
 @Data
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class QuestionOptionDTO {
-    private UUID id;
-
+public class QuestionRequestDTO { //create question request DTO
     @NotBlank
     private String questionText;
-
-    @NotBlank
-    private String correctOption;
-
     @NotEmpty
-    private List<OptionDTO> options;
-
+    private List<QuestionRequestDTO.OptionDTO> options;
 
     @Data
     @Builder
     @NoArgsConstructor
     @AllArgsConstructor
     public static class OptionDTO {
-        private UUID id;
-
         @NotBlank
-        private String label;
-
+        private Boolean isCorrect;
         @NotBlank
         private String text;
     }
-
 }
