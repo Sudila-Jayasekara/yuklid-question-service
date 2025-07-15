@@ -17,8 +17,8 @@ public class Option {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
-    private String label; // "A", "B", etc.
-    private String text;  // The actual answer
+    private String text;
+    private Boolean isCorrect;
 
     @ManyToOne
     @JoinColumn(name = "question_id")
