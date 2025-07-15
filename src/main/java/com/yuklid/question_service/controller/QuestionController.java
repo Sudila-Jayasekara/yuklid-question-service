@@ -35,5 +35,11 @@ public class QuestionController {
         return ResponseEntity.ok(question);
     }
 
+    @GetMapping("/random")
+    public ResponseEntity<QuestionResponseDTO> getRandomQuestion(){
+        QuestionResponseDTO question = questionService.getRandomQuestion();
+        return ResponseEntity.ok(question);
+    }
+
 
 }

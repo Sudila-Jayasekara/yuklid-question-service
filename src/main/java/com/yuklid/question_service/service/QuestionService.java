@@ -20,8 +20,6 @@ public class QuestionService {
     private final QuestionRepository questionRepository;
     private final OptionRepository optionRepository;
 
-
-
     @Transactional
     public QuestionResponseDTO createQuestion(QuestionRequestDTO dto) {
         Question question = mapToQuestionEntity(dto);
@@ -33,6 +31,14 @@ public class QuestionService {
         Question question = questionRepository.findById(id)
                 .orElseThrow(() -> new QuestionNotFoundException("Question not found"));
         return mapToQuestionOptionDTO(question);
+    }
+
+    public QuestionResponseDTO getRandomQuestion() {
+        Question randomQuestion = questionRepository.findRandomQuestion();
+        if(randomQuestion == null){
+            throw new QuestionNotFoundException("No questions available");
+        }
+        return mapToQuestionOptionDTO(randomQuestion);
     }
 
     private QuestionResponseDTO mapToQuestionOptionDTO(Question question) {
@@ -66,5 +72,6 @@ public class QuestionService {
         question.setOptions(options);
         return question;
     }
+
 
 }
